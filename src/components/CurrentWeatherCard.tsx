@@ -1,9 +1,12 @@
 "use client";
 
-import {
-  airQualityDescriptions,
-  CurrentWeatherApiResponse,
-} from "@/services/weather";
+import { formatTemperature, TempFormat } from "@/lib/format";
+import { airQualityDescriptions } from "@/services/forecast";
+import { CurrentWeather } from "@/types/weather";
+import { ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import ToggleFormatTemp from "./ToggleFormatTemp";
 import {
   Card,
   CardContent,
@@ -11,67 +14,53 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import Image from "next/image";
-import { formatTemperature } from "@/lib/format";
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { ArrowRight } from "lucide-react";
 
 interface CurrentWeatherCardProps {
-  currentWeather: CurrentWeatherApiResponse;
+  currentWeather: CurrentWeather;
+  minMaxTemp: {
+    maxtemp_c: number;
+    maxtemp_f: number;
+    mintemp_c: number;
+    mintemp_f: number;
+  };
 }
 
 const CurrentWeatherCard = ({
   currentWeather: {
-    current: {
-      last_updated,
-      condition,
+    last_updated,
+    condition,
 
-      temp_c,
-      temp_f,
-      feelslike_c,
-      feelslike_f,
+    temp_c,
+    temp_f,
+    feelslike_c,
+    feelslike_f,
 
-      humidity,
-      precip_mm,
-      pressure_mb,
-      vis_km,
-      cloud,
-      uv,
+    humidity,
+    precip_mm,
+    pressure_mb,
+    vis_km,
+    cloud,
+    uv,
 
-      wind_kph,
-      wind_dir,
-      wind_degree,
+    wind_kph,
+    wind_dir,
+    wind_degree,
 
-      air_quality,
-    },
+    air_quality: { "us-epa-index": us_ep_index },
   },
+  minMaxTemp,
 }: CurrentWeatherCardProps) => {
-  const [formatTmp, setFormatTmp] = useState<"c" | "f">("c");
+  const [tempFormat, setTempFormat] = useState<TempFormat>("c");
 
   return (
     <Card className="rounded border-0 ring-[1px] ring-primary/10">
       <CardHeader>
         <div className="flex items-center justify-between gap-3">
           <CardTitle>Current Weather</CardTitle>
-          <div>
-            <Button
-              onClick={() => setFormatTmp("c")}
-              className="rounded-e-none"
-              variant={formatTmp === "c" ? "default" : "secondary"}
-              size="sm"
-            >
-              C
-            </Button>
-            <Button
-              onClick={() => setFormatTmp("f")}
-              className="rounded-s-none"
-              variant={formatTmp === "f" ? "default" : "secondary"}
-              size="sm"
-            >
-              F
-            </Button>
-          </div>
+          <ToggleFormatTemp
+            tempFormat={tempFormat}
+            setTempFormat={setTempFormat}
+          />
         </div>
         <CardDescription>{last_updated}</CardDescription>
       </CardHeader>
@@ -84,21 +73,47 @@ const CurrentWeatherCard = ({
             width={128}
             height={128}
           />
-          <div className="space-y-0.5 max-sm:text-center">
-            <p className="text-xl font-semibold">{condition.text}</p>
-            <p className="text-2xl font-bold">
-              {formatTemperature(
-                formatTmp === "c" ? temp_c : temp_f,
-                formatTmp,
-              )}
-            </p>
-            <p className="text-muted-foreground">
-              Feels like{" "}
-              {formatTemperature(
-                formatTmp === "c" ? feelslike_c : feelslike_f,
-                formatTmp,
-              )}
-            </p>
+          <div className="flex flex-wrap gap-7">
+            <div className="grow space-y-0.5 max-sm:text-center">
+              <p className="text-xl font-semibold">{condition.text}</p>
+              <p className="text-2xl font-bold">
+                {formatTemperature(
+                  tempFormat === "c" ? temp_c : temp_f,
+                  tempFormat,
+                )}
+              </p>
+              <p className="text-muted-foreground">
+                Feels like{" "}
+                {formatTemperature(
+                  tempFormat === "c" ? feelslike_c : feelslike_f,
+                  tempFormat,
+                )}
+              </p>
+            </div>
+            <div className="grow space-y-0.5 max-sm:text-center">
+              <p>
+                Min:
+                <span className="ms-1 text-[larger]">
+                  {formatTemperature(
+                    tempFormat === "c"
+                      ? minMaxTemp.mintemp_c
+                      : minMaxTemp.mintemp_f,
+                    tempFormat,
+                  )}
+                </span>
+              </p>
+              <p>
+                Max:
+                <span className="ms-1 text-[larger]">
+                  {formatTemperature(
+                    tempFormat === "c"
+                      ? minMaxTemp.maxtemp_c
+                      : minMaxTemp.maxtemp_f,
+                    tempFormat,
+                  )}
+                </span>
+              </p>
+            </div>
           </div>
           <div className="ms-auto flex w-full flex-wrap gap-x-5 gap-y-2 self-stretch rounded sm:basis-1/2">
             <ul className="grow space-y-2 text-muted-foreground">
@@ -124,20 +139,18 @@ const CurrentWeatherCard = ({
                   />
                 </div>
               </li>
-              {air_quality && (
-                <li className="flex items-center justify-between gap-2">
-                  <span>Air quality:</span>
-                  <span className="flex items-center gap-1.5 text-foreground">
-                    {airQualityDescriptions[air_quality["us-epa-index"]].text}
-                    <span
-                      className="block aspect-square size-4 rounded-full"
-                      style={{
-                        background: `${airQualityDescriptions[air_quality["us-epa-index"]].color}`,
-                      }}
-                    />
-                  </span>
-                </li>
-              )}
+              <li className="flex items-center justify-between gap-2">
+                <span>Air quality:</span>
+                <span className="flex items-center gap-1.5 text-foreground">
+                  {airQualityDescriptions[us_ep_index].text}
+                  <span
+                    className="block aspect-square size-4 rounded-full"
+                    style={{
+                      background: `${airQualityDescriptions[us_ep_index].color}`,
+                    }}
+                  />
+                </span>
+              </li>
             </ul>
             <ul className="grow space-y-2 text-muted-foreground">
               <li className="flex items-center justify-between gap-2">

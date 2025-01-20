@@ -1,9 +1,10 @@
 import { useToast } from "@/hooks/use-toast";
-import { search, SearchLocation } from "@/services/search";
+import { search } from "@/services/search";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 import { debounce } from "@/lib/utils";
+import { SearchLocation } from "@/types/weather";
 
 const getSearchResults = async (q: string) => {
   const results = await search(q);
@@ -52,7 +53,6 @@ const useSearch = () => {
   useEffect(() => {
     const contentWrapper = document.querySelector("[data-main-content]");
 
-
     if (isPending) {
       contentWrapper?.classList?.add("loading");
     } else {
@@ -63,6 +63,7 @@ const useSearch = () => {
 
   const handleSetFocusToResultsOption = useCallback((e: KeyboardEvent) => {
     const activeElement = document.activeElement as HTMLElement;
+    console.log(e.code);
 
     if (e.code === "ArrowDown") {
       if (activeElement.matches("[data-search-result]")) {
@@ -114,11 +115,13 @@ const useSearch = () => {
 
   const handleInputFocus = () => {
     setShowResults(true);
+    document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", handleSetFocusToResultsOption);
   };
 
   const handleInputBlur = () => {
     setShowResults(false);
+    document.documentElement.style.overflow = "auto";
     document.removeEventListener("keydown", handleSetFocusToResultsOption);
   };
 

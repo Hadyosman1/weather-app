@@ -1,10 +1,10 @@
 "use client";
 
 import useSetCoordinatesToSearchParams from "@/hooks/use-set-coordinates-to-search-params";
-import { Location } from "@/services/weather";
 import { MapPin } from "lucide-react";
 import ThemeToggleButton from "../ThemeToggleButton";
 import SearchInput from "../SearchInput";
+import type { Location } from "@/types/weather";
 
 interface NavbarProps {
   location: Location;
@@ -21,7 +21,7 @@ const Navbar = ({ location }: NavbarProps) => {
         </h1>
 
         {!!location && (
-          <span className="flex w-full items-center justify-center gap-1 text-xs md:text-sm md:w-fit">
+          <span className="flex w-full items-center justify-center gap-1 text-xs md:w-fit md:text-sm">
             <MapPin size={16} />
             {location.name}, {location.region}, {location.country}
           </span>

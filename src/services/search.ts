@@ -1,14 +1,5 @@
 import { WEATHER_API_BASE_URL, WEATHER_API_KEY } from "@/constants";
-
-export interface SearchLocation {
-  id: number;
-  name: string;
-  region: string;
-  country: string;
-  lat: number;
-  lon: number;
-  url: string;
-}
+import { SearchLocation } from "@/types/weather";
 
 export const search = async (q: string): Promise<SearchLocation[]> => {
   const res = await fetch(
