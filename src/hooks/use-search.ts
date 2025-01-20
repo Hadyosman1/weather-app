@@ -1,6 +1,6 @@
 import { useToast } from "@/hooks/use-toast";
 import { search, SearchLocation } from "@/services/search";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 import { debounce } from "@/lib/utils";
@@ -19,8 +19,12 @@ const useSearch = () => {
   const [results, setResults] = useState<SearchLocation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+
   const router = useRouter();
   const { toast } = useToast();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (val) {
@@ -45,6 +49,18 @@ const useSearch = () => {
     }
   }, [val, toast]);
 
+  useEffect(() => {
+    const contentWrapper = document.querySelector("[data-main-content]");
+
+
+    if (isPending) {
+      contentWrapper?.classList?.add("loading");
+    } else {
+      contentWrapper?.classList?.remove("loading");
+      setShowResults(false);
+    }
+  }, [isPending]);
+
   const handleSetFocusToResultsOption = useCallback((e: KeyboardEvent) => {
     const activeElement = document.activeElement as HTMLElement;
 
@@ -64,7 +80,12 @@ const useSearch = () => {
       }
     } else if (e.code === "ArrowUp") {
       if (activeElement.matches("[data-search-result]")) {
+        if (activeElement.dataset.searchResult === "0") {
+          searchInputRef.current?.focus();
+        }
+
         const previousElementSibling = activeElement.previousElementSibling;
+
         if (
           previousElementSibling &&
           previousElementSibling.matches("[data-search-result]")
@@ -81,7 +102,10 @@ const useSearch = () => {
 
   const handleResultClick = (result: SearchLocation) => {
     setShowResults(false);
-    router.push(`/?q=${result.lat},${result.lon}`);
+    setVal("");
+    startTransition(() => {
+      router.push(`/?q=${result.lat},${result.lon}`);
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,6 +125,7 @@ const useSearch = () => {
   return {
     val,
     setVal,
+    searchInputRef,
     results,
     isLoading,
     showResults,

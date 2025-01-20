@@ -21,7 +21,7 @@ const Navbar = ({ location }: NavbarProps) => {
         </h1>
 
         {!!location && (
-          <span className="flex w-full items-center justify-center gap-1 text-xs md:w-fit">
+          <span className="flex w-full items-center justify-center gap-1 text-xs md:text-sm md:w-fit">
             <MapPin size={16} />
             {location.name}, {location.region}, {location.country}
           </span>

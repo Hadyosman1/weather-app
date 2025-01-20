@@ -24,24 +24,52 @@ export interface AirQuality {
   so2: number;
   pm2_5: number;
   pm10: number;
-  us_epa_index: number;
-  gb_defra_index: number;
+  "us-epa-index": number;
+  "gb-defra-index": number;
 }
 
 export interface CurrentWeather {
   last_updated_epoch: number;
   last_updated: string;
+
   temp_c: number;
   temp_f: number;
+  feelslike_c: number;
+  feelslike_f: number;
+
+  precip_mm: number;
+
+  wind_kph: number;
+  wind_degree: number;
+  wind_dir: string;
+
+  pressure_mb: number;
+  vis_km: number;
+  uv: number;
+
+  humidity: number;
+  cloud: number;
   is_day: number;
   condition: Condition;
   air_quality?: AirQuality;
 }
 
-interface GetCurrentApiResponse {
+export interface CurrentWeatherApiResponse {
   location: Location;
   current: CurrentWeather;
 }
+
+export const airQualityDescriptions: Record<
+  AirQuality["us-epa-index"],
+  { text: string; color: string }
+> = {
+  1: { text: "Good", color: "green" },
+  2: { text: "Fair", color: "lightgreen" },
+  3: { text: "Moderate", color: "yellow" },
+  4: { text: "Unhealthy", color: "orange" },
+  5: { text: "Very Unhealthy", color: "red" },
+  6: { text: "Hazardous", color: "darkred" },
+};
 
 export const getCurrentWeather = async (
   q: string,
@@ -53,7 +81,9 @@ export const getCurrentWeather = async (
     `${WEATHER_API_BASE_URL}/current.json?key=${WEATHER_API_KEY}&q=${q || "Cairo"}&aqi=${airQualityQuery}`,
   );
 
-  const data: GetCurrentApiResponse = await res.json();
+  const data: CurrentWeatherApiResponse = await res.json();
+
+  if (!res.ok) return null;
 
   return data;
 };

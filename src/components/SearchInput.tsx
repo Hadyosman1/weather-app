@@ -9,6 +9,7 @@ const SearchInput = () => {
   const {
     val,
     setVal,
+    searchInputRef,
     results,
     isLoading,
     showResults,
@@ -21,6 +22,7 @@ const SearchInput = () => {
   return (
     <div className="relative max-w-96 transition-all duration-500 *:transition-all *:duration-500 has-[input:focus]:grow has-[input:not(:placeholder-shown)]:grow">
       <Input
+        ref={searchInputRef}
         autoComplete="off"
         type="text"
         id="search-input"
@@ -33,7 +35,7 @@ const SearchInput = () => {
       />
 
       <label
-        className="pointer-events-none invisible absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer self-stretch opacity-0 hover:text-foreground/50 peer-placeholder-shown:pointer-events-auto peer-placeholder-shown:visible peer-placeholder-shown:opacity-100"
+        className="pointer-events-none invisible absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer self-stretch text-primary/90 opacity-0 hover:text-primary/50 peer-placeholder-shown:pointer-events-auto peer-placeholder-shown:visible peer-placeholder-shown:opacity-100"
         htmlFor="search-input"
       >
         <Search size={20} />
