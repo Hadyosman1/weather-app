@@ -5,6 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Chatgpt generated this debounce function
 export const debounce = <T extends unknown[], R>(
   callback: (...args: T) => Promise<R>, // Ensure callback returns a Promise
   delay: number,
@@ -24,4 +25,18 @@ export const debounce = <T extends unknown[], R>(
       }, delay);
     });
   };
+};
+
+export const getDayName = (date: Date) => {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  return days[date.getDay()];
 };

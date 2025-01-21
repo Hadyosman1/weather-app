@@ -80,6 +80,7 @@ const SearchInput = () => {
               onKeyDown={(e) => {
                 if (e.code === "Enter") {
                   handleResultClick(result);
+                  document.documentElement.style.overflow = "auto";
                 }
               }}
               onPointerDown={() => handleResultClick(result)}

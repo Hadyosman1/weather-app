@@ -14,7 +14,7 @@ const NotFoundPage = () => {
           Please go to home page and try again.
         </p>
         <Button asChild>
-          <Link href="/?q=cairo">Home</Link>
+          <Link href="/">Home</Link>
         </Button>
       </div>
     </main>

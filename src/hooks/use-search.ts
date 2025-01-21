@@ -20,13 +20,15 @@ const useSearch = () => {
   const [results, setResults] = useState<SearchLocation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  
+  const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [isPending, startTransition] = useTransition();
 
+  // Get results on input change
   useEffect(() => {
     if (val) {
       setIsLoading(true);
@@ -50,6 +52,7 @@ const useSearch = () => {
     }
   }, [val, toast]);
 
+  // Handle update loading state class
   useEffect(() => {
     const contentWrapper = document.querySelector("[data-main-content]");
 
@@ -61,9 +64,9 @@ const useSearch = () => {
     }
   }, [isPending]);
 
+  // Handle Keyboard navigation
   const handleSetFocusToResultsOption = useCallback((e: KeyboardEvent) => {
     const activeElement = document.activeElement as HTMLElement;
-    console.log(e.code);
 
     if (e.code === "ArrowDown") {
       if (activeElement.matches("[data-search-result]")) {

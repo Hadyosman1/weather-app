@@ -1,7 +1,10 @@
 import CurrentWeatherCard from "@/components/CurrentWeatherCard";
+import DailyForecast from "@/components/DailyForecast";
 import HourlyForecast from "@/components/HourlyForecast";
 import Navbar from "@/components/layout/Navbar";
+import { getDayName } from "@/lib/utils";
 import { getCurrentWeatherWithForecast } from "@/services/forecast";
+
 import { notFound } from "next/navigation";
 
 interface HomePageProps {
@@ -16,6 +19,7 @@ const HomePage = async ({ searchParams }: HomePageProps) => {
   if (!data) notFound();
 
   const { location, current, forecast } = data;
+
   const currentDate = new Date(forecast.forecastday[0].date);
 
   return (
@@ -29,14 +33,20 @@ const HomePage = async ({ searchParams }: HomePageProps) => {
             minMaxTemp={forecast.forecastday[0].day}
           />
           <section>
-            <h2 className="flex items-center gap-3 text-xl font-bold md:text-2xl">
-              Today hourly forecast
+            <div className="flex flex-wrap items-center gap-3 font-bold max-md:mb-4">
+              <h2 className="text-xl md:text-2xl">Today hourly forecast</h2>
               <span className="text-sm text-primary">
-                {forecast.forecastday[0].date}{" "}
-                {currentDate.toDateString().split(" ")[0]}
+                {forecast.forecastday[0].date} {getDayName(currentDate)}
               </span>
-            </h2>
+            </div>
+
             <HourlyForecast hourlyForecast={forecast.forecastday[0].hour} />
+
+            <h2 className="mb-3 mt-2 text-xl font-bold md:text-2xl">
+              Daily forecast
+            </h2>
+
+            <DailyForecast dailyyForecast={forecast.forecastday.slice(1)} />
           </section>
         </div>
       </main>
